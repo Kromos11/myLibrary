@@ -85,9 +85,12 @@ public class View implements IView, ICommandLine {
 	public void showLibraryItems(List<ILibraryItem> list) {
 			System.out.println("Cписок литературы:");
 			for(ILibraryItem item:list) {
-				System.out.println("id: "+item.getId()+", Тип: "+item.getType()+", Наименование: "+item.getName()+".");
+				System.out.println("id: "+item.getId()+", Тип: "+item.getType()+", Наименование: "+item.getName()+
+					" Статус: "+(item.isFree()?"Свободна":"Занята"));
 			}
 			System.out.println("Всего: "+list.size()+" пунктов");
 	}
+
+	
 
 }

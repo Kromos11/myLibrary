@@ -1,8 +1,14 @@
 package domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import Library.core.ILibraryItem;
 import Library.core.IReader;
+import Main.Application;
 
 public class Reader implements IReader{
 
@@ -10,6 +16,8 @@ public class Reader implements IReader{
 	
 	private String name;
 	private long id;
+	private Set<ILibraryItem>readBooks = new HashSet<>();// добавлять в сет прочтенные книги(при приеме)
+	private Set<ILibraryItem>onHold = new HashSet<>();// список книг которые у читателя дома
 	
 	public Reader(String name) {
 		this.name = name;
@@ -51,6 +59,34 @@ public class Reader implements IReader{
 		return true;
 	}
 
+	@Override
+	public void read(ILibraryItem item) {
+		this.onHold.remove(item);
+		this.readBooks.add(item);
+		
+	}
+
+	@Override
+	public List<ILibraryItem> readItems() {// список прочитанных книг
+		return new ArrayList<>(this.readBooks);
+	}
+
+	@Override
+	public List<ILibraryItem> onHold() {//список книг на руках
+		return new ArrayList<>(this.onHold);
+
+	}
+
+	@Override
+	public void hold(ILibraryItem item) {
+		this.onHold.add(item);
+		
+	}
+
+	@Override
+	public boolean isRead(ILibraryItem item) {
+		return this.readBooks.contains(item);
+	}
 	
 
 }

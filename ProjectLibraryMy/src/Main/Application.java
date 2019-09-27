@@ -3,16 +3,21 @@ package Main;
 import Controller.Command;
 import Library.core.ICommandLine;
 import Library.core.ILibrary;
+import Library.core.ILibraryItem;
+import Library.core.IReader;
 import Library.core.IView;
 import domain.Book;
 import domain.Library;
 import domain.Magazine;
 import domain.Newspaper;
 import domain.Reader;
+import domain.LibraryItem;
 import UI.View;
 import static Controller.Command.*;
-
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Application implements Serializable {
 	private ILibrary library;
@@ -25,11 +30,12 @@ public class Application implements Serializable {
 		this.view = (IView)this.commandLine;
 	}
 	
+	
 	@SuppressWarnings("incomplete-switch")
 	public void run() {
 		boolean run = true;
 		while(run) {
-			Command com1 = this.commandLine.getNextCommand(ADD_READERS,SHOW_READERS,ADD_LIBRARY_ITEM,SHOW_ALL_LIBRARY_ITEM,SAVE,EXIT);
+			Command com1 = this.commandLine.getNextCommand(ADD_READERS,SHOW_READERS,ADD_LIBRARY_ITEM,SHOW_ALL_LIBRARY_ITEM,ISSUANCE_RECEPTION_BOOK,EXIT);
 			switch(com1) {
 			case ADD_READERS:addReader();
 			break;
@@ -39,7 +45,7 @@ public class Application implements Serializable {
 			break;
 			case SHOW_ALL_LIBRARY_ITEM:this.showLibraryItem();
 			break;
-			case SAVE:saveApplication();
+			case ISSUANCE_RECEPTION_BOOK: this.putBookReader();
 			break;
 			case EXIT:close();
 			run = false;
@@ -49,7 +55,7 @@ public class Application implements Serializable {
 	}
 
 	private void showReaders() {
-		this.view.showReaders(this.library.getReader());
+		this.view.showReaders(this.library.getReaders());
 		
 	}
 
@@ -110,18 +116,67 @@ public class Application implements Serializable {
 		}
 	}
 	
+	
+	private void issuanceReception() {//Добавить литературу
+		Command command3 = this.commandLine.getNextCommand(ISSUANCE_BOOK,RECEPTION_BOOK);
+		switch(command3) {
+		case ISSUANCE_BOOK: this.putBookReader();
+		break;
+		case RECEPTION_BOOK:
+		break;
+		}
+	}
+	
+	
+	private void putBookReader() {
+		IReader reader = reader(null);
+		ILibraryItem item = item(null);
+		String nameReader = this.commandLine.getString("Введите имя читателя");
+		String nameBook = this.commandLine.getString("Введите название книги");
+		Command command = this.commandLine.getNextCommand("Выдать книгу '"+nameBook+"' читателю '"+nameReader+"'?",CONFIRM,DECLINE);
+		switch(command) {
+		case CONFIRM:
+			this.reader(nameReader);
+			this.item(nameBook);
+			item.busy(reader);
+			try {
+			
+			}catch(NullPointerException e) {
+				e.printStackTrace();
+			}
+			this.view.showMessage("Данная книга выдана читателю "+nameReader);
+		break;
+		default:this.view.showMessage("...отмена.");
+		}
+	}
+	
+	
+	
+	private IReader reader(String nameReader) {
+		List<IReader> readers = new ArrayList<>();
+		if(readers.size()==0)return null;
+		return readers.get(readers.size());
+	}
+	
+	
+	private ILibraryItem item(String nameBook) {
+		List<ILibraryItem> item = new ArrayList<>();
+		if(item.size()==0)return null;
+		return item.get(item.size());
+	}
+	
+	
 	private void showLibraryItem() {
 		this.view.showLibraryItems(this.library.getLibraryItemsList(null));
 	}
 	
-	private void saveApplication() {
-		
-	}
+	
 	
 	
 	private void close() {
 		this.view.showMessage("До свидания");	
 	}
-	
+
+		
 	
 }

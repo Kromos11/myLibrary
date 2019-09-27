@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import Library.core.IArticle;
 import Library.core.IArticleContained;
@@ -20,7 +21,7 @@ public class Library implements ILibrary{
 	private Map<IArticle, IArticleContained>articles= new HashMap<>();
 	
 	@Override
-	public List<IReader> getReader() {
+	public List<IReader> getReaders() {
 		return new ArrayList<>(this.readers.values());
 	}
 
@@ -42,6 +43,13 @@ public class Library implements ILibrary{
 			List<IArticle>list = ((IArticleContained)ob).getArticles();
 			for(IArticle article:list)this.articles.put(article, (IArticleContained)ob);
 		}
+	}
+	
+
+
+	@Override
+	public List<ILibraryItem> getFreeItems() {
+		return this.items.values().stream().filter(i -> i.isFree()).collect(Collectors.toList());
 	}
 
 	

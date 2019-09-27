@@ -7,4 +7,5 @@ public interface ICommandLine {
 	Command getNextCommand(String message,Command...comands);
 	String getString(String question);
 	int getInteger(String question);
+	
 }

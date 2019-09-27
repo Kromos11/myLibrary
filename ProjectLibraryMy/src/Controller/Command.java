@@ -12,8 +12,11 @@ public enum Command {
 	ADD_BOOK("Добавить книгу"),
 	ADD_MAGAZINE("Добавить журнал"),
 	ADD_NEWSPAPER("Добавить газету"),
-	SAVE("Сохранить данные"),
-	SHOW_ALL_LIBRARY_ITEM("Показать весь список библиотеки");
+	SHOW_ALL_LIBRARY_ITEM("Показать весь список библиотеки"),
+	ISSUANCE_RECEPTION_BOOK("Выдача и прием книг"),
+	ISSUANCE_BOOK("Выдать книгу читателю"),
+	RECEPTION_BOOK("Принять книгу у читателя");
+	
 	
 	
 	
