@@ -4,6 +4,7 @@ import Controller.Command;
 import Library.core.ICommandLine;
 import Library.core.ILibrary;
 import Library.core.ILibraryItem;
+import Library.core.ILibraryObject;
 import Library.core.IReader;
 import Library.core.IView;
 import domain.Book;
@@ -17,17 +18,26 @@ import static Controller.Command.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.print.StreamPrintService;
 
 
 public class Application implements Serializable {
 	private ILibrary library;
 	private ICommandLine commandLine;
 	private IView view;
+	private IReader reader;
 	
 	{
 		this.library = new Library();
 		this.commandLine = new View();
 		this.view = (IView)this.commandLine;
+		this.reader = new Reader();
 	}
 	
 	
@@ -35,7 +45,7 @@ public class Application implements Serializable {
 	public void run() {
 		boolean run = true;
 		while(run) {
-			Command com1 = this.commandLine.getNextCommand(ADD_READERS,SHOW_READERS,ADD_LIBRARY_ITEM,SHOW_ALL_LIBRARY_ITEM,ISSUANCE_RECEPTION_BOOK,EXIT);
+			Command com1 = this.commandLine.getNextCommand(ADD_READERS,SHOW_READERS,ADD_LIBRARY_ITEM,SHOW_ALL_LIBRARY_ITEM,ISSUANCE_RECEPTION_BOOK,SEARCH_READER,EXIT);
 			switch(com1) {
 			case ADD_READERS:addReader();
 			break;
@@ -45,7 +55,9 @@ public class Application implements Serializable {
 			break;
 			case SHOW_ALL_LIBRARY_ITEM:this.showLibraryItem();
 			break;
-			case ISSUANCE_RECEPTION_BOOK: this.putBookReader();
+			case ISSUANCE_RECEPTION_BOOK: this.issuanceReception();;
+			break;
+			case SEARCH_READER: this.searchReader();
 			break;
 			case EXIT:close();
 			run = false;
@@ -117,66 +129,73 @@ public class Application implements Serializable {
 	}
 	
 	
-	private void issuanceReception() {//Добавить литературу
+	private void issuanceReception() {//Выдать литературу 
 		Command command3 = this.commandLine.getNextCommand(ISSUANCE_BOOK,RECEPTION_BOOK);
 		switch(command3) {
 		case ISSUANCE_BOOK: this.putBookReader();
 		break;
 		case RECEPTION_BOOK:
 		break;
-		}
-	}
-	
-	
-	private void putBookReader() {
-		IReader reader = reader(null);
-		ILibraryItem item = item(null);
-		String nameReader = this.commandLine.getString("Введите имя читателя");
-		String nameBook = this.commandLine.getString("Введите название книги");
-		Command command = this.commandLine.getNextCommand("Выдать книгу '"+nameBook+"' читателю '"+nameReader+"'?",CONFIRM,DECLINE);
-		switch(command) {
-		case CONFIRM:
-			this.reader(nameReader);
-			this.item(nameBook);
-			item.busy(reader);
-			try {
-			
-			}catch(NullPointerException e) {
-				e.printStackTrace();
-			}
-			this.view.showMessage("Данная книга выдана читателю "+nameReader);
-		break;
 		default:this.view.showMessage("...отмена.");
 		}
 	}
 	
 	
-	
-	private IReader reader(String nameReader) {
-		List<IReader> readers = new ArrayList<>();
-		if(readers.size()==0)return null;
-		return readers.get(readers.size());
+	private void putBookReader() {
+		String nameReader = this.commandLine.getString("Введите имя читателя");
+		if(this.library.getReaders().stream().map(r-> r.getName()).collect(Collectors.toList()).contains(nameReader)) {
+			String nameBook = this.commandLine.getString("Введите название книги");
+			if(this.library.getFreeItems().stream().map(i-> i.getName()).collect(Collectors.toList()).contains(nameBook)) {
+				List<IReader> reader = putReader(nameReader);
+				List<ILibraryItem> item = putItem(nameBook);
+				if(reader!=null&&item!=null) {
+					System.out.println(putReader(nameReader));
+				}else {
+					System.out.println("Проверка не прошла");
+				}
+			}else {
+				System.out.println("Такой книги нет в библиотеке.");
+			}
+		}else {
+			System.out.println("Такого читателя нет в библиотеке.");
+		}
 	}
 	
 	
-	private ILibraryItem item(String nameBook) {
-		List<ILibraryItem> item = new ArrayList<>();
-		if(item.size()==0)return null;
-		return item.get(item.size());
+	private List<IReader> putReader(String nameReader) {
+		return  this.library.getReaders().stream().filter(r-> r.getName()==nameReader).collect(Collectors.toList());
 	}
+	
+	private List<ILibraryItem> putItem(String nameBook) {
+		return this.library.getFreeItems().stream().filter(i-> i.getName()==nameBook).collect(Collectors.toList());
+	}
+		
+		
+	
+	
+	
+	
+	private void searchReader() {
+		String name = this.commandLine.getString("Введите имя читателя");
+		if(this.library.getReaders().stream().map(r-> r.getName()).collect(Collectors.toList()).contains(name)){
+			this.library.getReaders().stream().map(r-> r.getName().toString()).collect(Collectors.filtering(r-> r==name, Collectors.toList())).forEach(System.out::println);
+		}else {
+			System.out.println("Такого читателя нет в библиотеке.");
+		}
+				
+	}
+		
 	
 	
 	private void showLibraryItem() {
 		this.view.showLibraryItems(this.library.getLibraryItemsList(null));
+		
 	}
-	
-	
-	
+		
 	
 	private void close() {
 		this.view.showMessage("До свидания");	
 	}
-
-		
+	
 	
 }

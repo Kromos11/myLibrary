@@ -8,5 +8,4 @@ public interface IView {
 	void showLibraryItems(List<ILibraryItem>list);
 	void showMessage(String message);
 	
-	
 }

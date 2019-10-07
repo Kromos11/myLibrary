@@ -15,6 +15,7 @@ public enum Command {
 	SHOW_ALL_LIBRARY_ITEM("Показать весь список библиотеки"),
 	ISSUANCE_RECEPTION_BOOK("Выдача и прием книг"),
 	ISSUANCE_BOOK("Выдать книгу читателю"),
+	SEARCH_READER("Найти читателя"),
 	RECEPTION_BOOK("Принять книгу у читателя");
 	
 	

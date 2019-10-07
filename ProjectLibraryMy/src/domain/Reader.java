@@ -24,6 +24,12 @@ public class Reader implements IReader{
 		this.id = ID_COUNTER++;
 	}
 	
+
+	public Reader() {
+		// TODO Auto-generated constructor stub
+	}
+
+
 	@Override
 	public Serializable getId() {
 		return this.id;
@@ -59,34 +65,36 @@ public class Reader implements IReader{
 		return true;
 	}
 
+
+	@Override
+	public List<ILibraryItem> readItems() {// список прочитанных книг, заносятся сюда при приеме
+		return new ArrayList<>(this.readBooks);
+	}
+
+
+	public List<ILibraryItem> onHold() {//список книг на руках
+		return new ArrayList<>(this.onHold);}
+
 	@Override
 	public void read(ILibraryItem item) {
 		this.onHold.remove(item);
 		this.readBooks.add(item);
 		
 	}
+	
 
 	@Override
-	public List<ILibraryItem> readItems() {// список прочитанных книг
-		return new ArrayList<>(this.readBooks);
-	}
-
-	@Override
-	public List<ILibraryItem> onHold() {//список книг на руках
-		return new ArrayList<>(this.onHold);
-
-	}
-
-	@Override
-	public void hold(ILibraryItem item) {
+	public void hold(ILibraryItem item) {// метод добавления книг в список который на руках
 		this.onHold.add(item);
 		
 	}
 
 	@Override
-	public boolean isRead(ILibraryItem item) {
+	public boolean isRead(ILibraryItem item) {// метод проверки книг которые читатель уже читал
 		return this.readBooks.contains(item);
 	}
+	
+	
 	
 
 }

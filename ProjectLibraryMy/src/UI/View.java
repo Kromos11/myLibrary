@@ -2,6 +2,7 @@ package UI;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import Controller.Command;
@@ -58,6 +59,7 @@ public class View implements IView, ICommandLine {
 		System.out.println(question);
 		return scanner.nextLine();
 	}
+	
 
 	@Override
 	public int getInteger(String question) {
@@ -92,5 +94,5 @@ public class View implements IView, ICommandLine {
 	}
 
 	
-
+	
 }
